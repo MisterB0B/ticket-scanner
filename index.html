@@ -7,6 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Ticket Scanner | The Light Park</title>
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <script src="https://js.stripe.com/terminal/v1/"></script>
   <style>
     :root {
       --bg: #0a0a0f;
@@ -471,6 +472,97 @@
     }
     .checkout-btn:disabled { opacity: 0.5; cursor: not-allowed; }
     
+    /* Reader Status */
+    .reader-status {
+      background: var(--surface);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .reader-info { display: flex; align-items: center; gap: 10px; }
+    .reader-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--red);
+    }
+    .reader-dot.connected { background: var(--green); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    .reader-label { font-size: 13px; }
+    .reader-name { font-weight: 600; }
+    .reader-type { color: var(--text-dim); font-size: 11px; }
+    .reader-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 12px;
+      color: var(--text);
+      font-size: 12px;
+      cursor: pointer;
+    }
+    
+    /* Payment Methods */
+    .payment-methods {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .pay-method-btn {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 12px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+    }
+    .pay-method-btn:active { transform: scale(0.98); }
+    .pay-method-btn.selected { border-color: var(--green); background: rgba(34,197,94,0.1); }
+    .pay-method-btn .icon { font-size: 24px; margin-bottom: 4px; }
+    .pay-method-btn .label { font-size: 12px; font-weight: 500; }
+    
+    /* Payment Modal */
+    .payment-modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.9);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      padding: 20px;
+    }
+    .payment-modal.show { display: flex; }
+    .payment-modal .icon { font-size: 80px; margin-bottom: 20px; }
+    .payment-modal .title { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+    .payment-modal .amount { font-size: 48px; font-weight: 700; color: var(--green); margin-bottom: 8px; }
+    .payment-modal .instruction { color: var(--text-dim); font-size: 16px; text-align: center; margin-bottom: 24px; }
+    .payment-modal .spinner {
+      width: 40px; height: 40px;
+      border: 4px solid var(--border);
+      border-top-color: var(--green);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .payment-modal .cancel-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 32px;
+      color: var(--text);
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .payment-modal.success .icon { color: var(--green); }
+    .payment-modal.error .icon { color: var(--red); }
+    
     /* ========== LEADERBOARD TAB ========== */
     #leaderboardTab { padding: 16px; }
     
@@ -643,6 +735,18 @@
     
     <!-- Sales Tab -->
     <div class="tab-content" id="salesTab">
+      <!-- Reader Status -->
+      <div class="reader-status">
+        <div class="reader-info">
+          <div class="reader-dot" id="readerDot"></div>
+          <div class="reader-label">
+            <div class="reader-name" id="readerName">No Reader</div>
+            <div class="reader-type" id="readerType">Tap to connect</div>
+          </div>
+        </div>
+        <button class="reader-btn" onclick="connectReader()">⚙️ Setup</button>
+      </div>
+      
       <div class="quick-sale-label">Quick Add</div>
       <div class="quick-sales" id="quickSales"></div>
       
@@ -658,6 +762,19 @@
           <span>Total</span>
           <span class="amount" id="cartTotal">$0.00</span>
         </div>
+      </div>
+      
+      <!-- Payment Method -->
+      <div class="quick-sale-label" style="margin-top:14px">Payment Method</div>
+      <div class="payment-methods">
+        <button class="pay-method-btn selected" onclick="selectPayMethod('tap')" id="payTap">
+          <div class="icon">📱</div>
+          <div class="label">Tap to Pay</div>
+        </button>
+        <button class="pay-method-btn" onclick="selectPayMethod('reader')" id="payReader">
+          <div class="icon">💳</div>
+          <div class="label">Card Reader</div>
+        </button>
       </div>
       
       <button class="checkout-btn" id="checkoutBtn" onclick="checkout()" disabled>
@@ -713,6 +830,26 @@
     </div>
     
     <button class="result-btn" onclick="dismissResult()">Scan Next</button>
+  </div>
+
+  <!-- Payment Modal -->
+  <div class="payment-modal" id="paymentModal">
+    <div class="icon" id="payModalIcon">📱</div>
+    <div class="amount" id="payModalAmount">$0.00</div>
+    <div class="title" id="payModalTitle">Ready to Pay</div>
+    <div class="instruction" id="payModalInstruction">Hold card or phone near device</div>
+    <div class="spinner" id="payModalSpinner"></div>
+    <button class="cancel-btn" onclick="cancelPayment()">Cancel</button>
+  </div>
+
+  <!-- Reader Setup Modal -->
+  <div class="payment-modal" id="readerModal">
+    <div class="icon">⚙️</div>
+    <div class="title">Connect Card Reader</div>
+    <div class="instruction" id="readerInstruction">Searching for readers...</div>
+    <div class="spinner" id="readerSpinner"></div>
+    <div id="readerList" style="width:100%;max-width:300px;margin-bottom:20px"></div>
+    <button class="cancel-btn" onclick="closeReaderModal()">Close</button>
   </div>
 
   <script>
@@ -774,7 +911,7 @@
       if (saved) {
         const session = JSON.parse(saved);
         if (Date.now() - session.loginTime < 8 * 60 * 60 * 1000) {
-          currentUser = employees.find(e => e.id === session visão.empId);
+          currentUser = employees.find(e => e.id === session.empId);
           currentVenue = session.venue || 'katy';
           stats = session.stats || { scans: 0, sales: 0, cars: 0, points: 0 };
           if (currentUser) showMainApp();
@@ -858,6 +995,7 @@
       document.getElementById('venueName').textContent = '📍 ' + currentVenue.charAt(0).toUpperCase() + currentVenue.slice(1);
       updateStats();
       initScanner();
+      initStripeTerminal();
     }
     
     function switchUser() {
@@ -1022,16 +1160,170 @@
       document.getElementById('checkoutBtn').disabled = cart.length === 0;
     }
     
+    // ========== STRIPE TERMINAL ==========
+    let terminal = null;
+    let connectedReader = null;
+    let selectedPayMethod = 'tap';
+    
+    // Initialize Stripe Terminal (call after login)
+    async function initStripeTerminal() {
+      // In production, fetch connection token from your server
+      terminal = StripeTerminal.create({
+        onFetchConnectionToken: fetchConnectionToken,
+        onUnexpectedReaderDisconnect: handleDisconnect,
+      });
+      
+      // Check for saved reader
+      const savedReader = localStorage.getItem('tlp_stripe_reader');
+      if (savedReader) {
+        const reader = JSON.parse(savedReader);
+        updateReaderUI(reader.label, reader.device_type, true);
+      }
+    }
+    
+    async function fetchConnectionToken() {
+      // TODO: Replace with your server endpoint
+      // const response = await fetch('/api/stripe/connection-token');
+      // const data = await response.json();
+      // return data.secret;
+      
+      // Demo mode - return mock token
+      console.log('Demo mode: Using simulated Stripe Terminal');
+      return 'demo_connection_token';
+    }
+    
+    function handleDisconnect() {
+      connectedReader = null;
+      updateReaderUI('Disconnected', 'Tap to reconnect', false);
+    }
+    
+    function updateReaderUI(name, type, connected) {
+      document.getElementById('readerName').textContent = name || 'No Reader';
+      document.getElementById('readerType').textContent = type || 'Tap to connect';
+      document.getElementById('readerDot').classList.toggle('connected', connected);
+    }
+    
+    async function connectReader() {
+      document.getElementById('readerModal').classList.add('show');
+      document.getElementById('readerInstruction').textContent = 'Searching for readers...';
+      document.getElementById('readerSpinner').style.display = 'block';
+      document.getElementById('readerList').innerHTML = '';
+      
+      // In production: discover actual readers
+      // const config = { simulated: false };
+      // const discoverResult = await terminal.discoverReaders(config);
+      
+      // Demo: Show simulated readers after delay
+      setTimeout(() => {
+        document.getElementById('readerSpinner').style.display = 'none';
+        document.getElementById('readerInstruction').textContent = 'Select a reader:';
+        document.getElementById('readerList').innerHTML = `
+          <button onclick="selectReader('tap')" style="width:100%;padding:14px;margin:6px 0;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);cursor:pointer;text-align:left">
+            <div style="font-weight:600">📱 Tap to Pay on iPhone</div>
+            <div style="font-size:12px;color:var(--text-dim)">This device</div>
+          </button>
+          <button onclick="selectReader('m2')" style="width:100%;padding:14px;margin:6px 0;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);cursor:pointer;text-align:left">
+            <div style="font-weight:600">💳 Stripe Reader M2</div>
+            <div style="font-size:12px;color:var(--text-dim)">Bluetooth · STRP-M2-001</div>
+          </button>
+          <button onclick="selectReader('wisepad')" style="width:100%;padding:14px;margin:6px 0;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);cursor:pointer;text-align:left">
+            <div style="font-weight:600">💳 WisePad 3</div>
+            <div style="font-size:12px;color:var(--text-dim)">Bluetooth · WISEP3-042</div>
+          </button>
+        `;
+      }, 1500);
+    }
+    
+    async function selectReader(type) {
+      const readers = {
+        tap: { label: 'Tap to Pay', device_type: 'iPhone NFC' },
+        m2: { label: 'Stripe M2', device_type: 'Bluetooth Reader' },
+        wisepad: { label: 'WisePad 3', device_type: 'Bluetooth Reader' }
+      };
+      
+      connectedReader = readers[type];
+      localStorage.setItem('tlp_stripe_reader', JSON.stringify(connectedReader));
+      updateReaderUI(connectedReader.label, connectedReader.device_type, true);
+      closeReaderModal();
+    }
+    
+    function closeReaderModal() {
+      document.getElementById('readerModal').classList.remove('show');
+    }
+    
+    function selectPayMethod(method) {
+      selectedPayMethod = method;
+      document.querySelectorAll('.pay-method-btn').forEach(btn => btn.classList.remove('selected'));
+      document.getElementById(method === 'tap' ? 'payTap' : 'payReader').classList.add('selected');
+    }
+    
     function checkout() {
       const total = cart.reduce((sum, item) => sum + item.price, 0);
-      if (confirm(`Process $${total.toFixed(2)} payment?`)) {
-        stats.sales += total;
-        stats.points += Math.floor(total);
+      if (total <= 0) return;
+      
+      // Show payment modal
+      const modal = document.getElementById('paymentModal');
+      modal.classList.remove('success', 'error');
+      modal.classList.add('show');
+      
+      document.getElementById('payModalAmount').textContent = '$' + total.toFixed(2);
+      document.getElementById('payModalIcon').textContent = selectedPayMethod === 'tap' ? '📱' : '💳';
+      document.getElementById('payModalTitle').textContent = 'Ready to Pay';
+      document.getElementById('payModalInstruction').textContent = 
+        selectedPayMethod === 'tap' 
+          ? 'Hold card or phone near device' 
+          : 'Insert or tap card on reader';
+      document.getElementById('payModalSpinner').style.display = 'block';
+      
+      // Process payment (simulated for demo)
+      processPayment(total);
+    }
+    
+    async function processPayment(amount) {
+      // In production:
+      // 1. Create PaymentIntent on your server
+      // 2. Collect payment method via Terminal
+      // 3. Process and confirm payment
+      
+      // Demo: Simulate payment processing
+      await new Promise(resolve => setTimeout(resolve, 2500));
+      
+      // 90% success rate for demo
+      const success = Math.random() > 0.1;
+      
+      const modal = document.getElementById('paymentModal');
+      document.getElementById('payModalSpinner').style.display = 'none';
+      
+      if (success) {
+        modal.classList.add('success');
+        document.getElementById('payModalIcon').textContent = '✅';
+        document.getElementById('payModalTitle').textContent = 'Payment Successful!';
+        document.getElementById('payModalInstruction').textContent = 'Receipt sent to customer';
+        
+        // Update stats
+        stats.sales += amount;
+        stats.points += Math.floor(amount);
         updateStats();
         saveSession();
-        alert('✅ Payment successful!');
-        clearCart();
+        
+        // Vibrate on success
+        if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+        
+        // Auto-close and clear cart
+        setTimeout(() => {
+          modal.classList.remove('show');
+          clearCart();
+        }, 2000);
+      } else {
+        modal.classList.add('error');
+        document.getElementById('payModalIcon').textContent = '❌';
+        document.getElementById('payModalTitle').textContent = 'Payment Failed';
+        document.getElementById('payModalInstruction').textContent = 'Card declined - try again';
       }
+    }
+    
+    function cancelPayment() {
+      document.getElementById('paymentModal').classList.remove('show');
     }
     
     // ========== LEADERBOARD ==========
