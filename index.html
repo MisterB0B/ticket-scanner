@@ -397,6 +397,53 @@
       cursor: pointer;
     }
     
+    /* Invalid Ticket Actions */
+    .invalid-details {
+      background: rgba(255,255,255,0.1);
+      border-radius: 14px;
+      padding: 16px;
+      width: 100%;
+      max-width: 320px;
+      margin-bottom: 16px;
+      text-align: left;
+    }
+    .invalid-reason {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .invalid-info {
+      font-size: 13px;
+      opacity: 0.85;
+      margin-bottom: 4px;
+    }
+    .invalid-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+      max-width: 320px;
+      margin-bottom: 16px;
+    }
+    .action-btn {
+      padding: 14px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .action-btn.primary { background: white; color: #333; }
+    .action-btn.secondary { background: rgba(255,255,255,0.2); color: white; }
+    .action-btn.warning { background: #f97316; color: white; }
+    
     /* ========== SALES TAB ========== */
     #salesTab { padding: 16px; }
     
@@ -829,6 +876,19 @@
       </div>
     </div>
     
+    <!-- Invalid Ticket Details -->
+    <div class="invalid-details" id="invalidDetails" style="display:none">
+      <div class="invalid-reason" id="invalidReason">
+        <span>⚠️</span>
+        <span id="invalidReasonText">Reason</span>
+      </div>
+      <div class="invalid-info" id="invalidInfo1"></div>
+      <div class="invalid-info" id="invalidInfo2"></div>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="invalid-actions" id="invalidActions" style="display:none"></div>
+    
     <button class="result-btn" onclick="dismissResult()">Scan Next</button>
   </div>
 
@@ -873,11 +933,83 @@
     ];
     
     const DEMO_TICKETS = [
+      // Valid tickets
       { valid: true, type: 'General Admission', date: 'Feb 6, 2026', vehicle: '1 Car', order: 'TLP-28491', addons: [{ icon: '☕', name: 'Hot Cocoa', qty: 2 }] },
       { valid: true, type: 'Season Pass - Gold', date: 'All Season', vehicle: '1 Car + Fast Pass', order: 'TLP-SP-1042', addons: [] },
       { valid: true, type: 'VIP Experience', date: 'Feb 6, 2026', vehicle: '1 Car', order: 'TLP-VIP-392', addons: [{ icon: '🎁', name: 'Blitzen Bundle', qty: 1 }] },
-      { valid: false, reason: 'Ticket was valid yesterday', order: 'TLP-27833' },
-      { valid: false, reason: 'Already scanned at 5:42 PM', order: 'TLP-28102' },
+      
+      // Invalid: Wrong date
+      { 
+        valid: false, 
+        errorType: 'wrong_date',
+        reason: 'Wrong Date',
+        info1: 'Ticket valid for: Feb 5, 2026',
+        info2: 'Order #TLP-27833 · General Admission',
+        order: 'TLP-27833',
+        actions: [
+          { label: '📅 Change Date ($0)', type: 'primary', action: 'changeDate' },
+          { label: '🎟️ Buy New Ticket', type: 'secondary', action: 'buyTicket' },
+          { label: '👑 Manager Override', type: 'warning', action: 'override' }
+        ]
+      },
+      
+      // Invalid: Already scanned
+      { 
+        valid: false, 
+        errorType: 'already_scanned',
+        reason: 'Already Scanned',
+        info1: 'First scan: Today at 5:42 PM',
+        info2: 'Order #TLP-28102 · General Admission',
+        order: 'TLP-28102',
+        actions: [
+          { label: '🔍 View Scan History', type: 'secondary', action: 'viewHistory' },
+          { label: '👑 Manager Override', type: 'warning', action: 'override' },
+          { label: '📞 Call Support', type: 'secondary', action: 'callSupport' }
+        ]
+      },
+      
+      // Invalid: Expired ticket
+      { 
+        valid: false, 
+        errorType: 'expired',
+        reason: 'Ticket Expired',
+        info1: 'Season ended: Jan 5, 2026',
+        info2: 'Order #TLP-25001 · 2025 Season Pass',
+        order: 'TLP-25001',
+        actions: [
+          { label: '🎟️ Buy 2026 Season Pass', type: 'primary', action: 'buySeasonPass' },
+          { label: '🎟️ Buy Tonight\'s Ticket', type: 'secondary', action: 'buyTicket' }
+        ]
+      },
+      
+      // Invalid: Unrecognized code
+      { 
+        valid: false, 
+        errorType: 'invalid_code',
+        reason: 'Invalid QR Code',
+        info1: 'This code is not recognized',
+        info2: 'May be damaged, fake, or from another venue',
+        order: 'UNKNOWN',
+        actions: [
+          { label: '⌨️ Enter Code Manually', type: 'primary', action: 'manualEntry' },
+          { label: '🔍 Look Up by Email', type: 'secondary', action: 'lookupEmail' },
+          { label: '📞 Call Support', type: 'secondary', action: 'callSupport' }
+        ]
+      },
+      
+      // Invalid: Refunded ticket
+      { 
+        valid: false, 
+        errorType: 'refunded',
+        reason: 'Ticket Refunded',
+        info1: 'This ticket was refunded on Feb 3, 2026',
+        info2: 'Order #TLP-27500 · General Admission',
+        order: 'TLP-27500',
+        actions: [
+          { label: '🎟️ Buy New Ticket', type: 'primary', action: 'buyTicket' },
+          { label: '📞 Call Support', type: 'secondary', action: 'callSupport' }
+        ]
+      }
     ];
     
     const leaderboardData = [
@@ -1070,6 +1202,12 @@
     
     function showResult(ticket) {
       const overlay = document.getElementById('resultOverlay');
+      const invalidDetails = document.getElementById('invalidDetails');
+      const invalidActions = document.getElementById('invalidActions');
+      
+      // Hide invalid sections by default
+      invalidDetails.style.display = 'none';
+      invalidActions.style.display = 'none';
       
       if (ticket.valid) {
         overlay.className = 'result-overlay show valid';
@@ -1096,8 +1234,70 @@
         overlay.className = 'result-overlay show invalid';
         document.getElementById('resultIcon').textContent = '❌';
         document.getElementById('resultStatus').textContent = 'INVALID';
-        document.getElementById('resultMessage').textContent = ticket.reason;
+        document.getElementById('resultMessage').textContent = '';
         document.getElementById('ticketDetails').style.display = 'none';
+        
+        // Show detailed invalid info
+        invalidDetails.style.display = 'block';
+        document.getElementById('invalidReasonText').textContent = ticket.reason || 'Unknown Error';
+        document.getElementById('invalidInfo1').textContent = ticket.info1 || '';
+        document.getElementById('invalidInfo2').textContent = ticket.info2 || '';
+        
+        // Show action buttons
+        if (ticket.actions && ticket.actions.length) {
+          invalidActions.style.display = 'flex';
+          invalidActions.innerHTML = ticket.actions.map(a => 
+            `<button class="action-btn ${a.type}" onclick="handleInvalidAction('${a.action}', '${ticket.order}')">${a.label}</button>`
+          ).join('');
+        }
+      }
+    }
+    
+    // Handle invalid ticket actions
+    function handleInvalidAction(action, orderId) {
+      dismissResult();
+      
+      switch(action) {
+        case 'changeDate':
+          alert(`Opening date change for order ${orderId}...\n\nIn production: Opens "Manage My Order" page`);
+          break;
+        case 'buyTicket':
+          alert('Opening ticket purchase...\n\nIn production: Opens ticketing page');
+          break;
+        case 'buySeasonPass':
+          alert('Opening season pass purchase...\n\nIn production: Opens season pass page');
+          break;
+        case 'override':
+          const pin = prompt('Enter manager PIN to override:');
+          if (pin === '0000') {
+            alert('✅ Manager override approved\n\nGuest may enter.');
+            stats.scans++;
+            stats.cars++;
+            updateStats();
+            saveSession();
+          } else if (pin) {
+            alert('❌ Invalid manager PIN');
+          }
+          break;
+        case 'viewHistory':
+          alert(`Scan History for ${orderId}:\n\n• Feb 6, 5:42 PM - Gate A (Maria G.)\n\nIn production: Shows full scan history`);
+          break;
+        case 'lookupEmail':
+          const email = prompt('Enter customer email:');
+          if (email) {
+            alert(`Looking up tickets for ${email}...\n\nIn production: Searches order database`);
+          }
+          break;
+        case 'callSupport':
+          if (confirm('Call Light Park Support?\n\n(555) 123-4567')) {
+            window.location.href = 'tel:+15551234567';
+          }
+          break;
+        case 'manualEntry':
+          manualEntry();
+          break;
+        default:
+          alert(`Action: ${action}\n\nIn production: Handles this action`);
       }
     }
     
