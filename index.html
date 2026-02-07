@@ -1815,7 +1815,70 @@
       document.getElementById('statCars').textContent = stats.cars;
       document.getElementById('statPoints').textContent = stats.points;
       document.getElementById('yourTotal').textContent = '$' + stats.sales.toFixed(2);
+      
+      // Sync stats to cloud for Command Center to pull
+      syncLiveStats();
     }
+    
+    // Sync live stats to cloud (debounced)
+    let syncTimeout = null;
+    function syncLiveStats() {
+      clearTimeout(syncTimeout);
+      syncTimeout = setTimeout(async () => {
+        try {
+          await CloudSync.save('live_stats', {
+            venue: currentVenue,
+            cars: stats.cars,
+            scans: stats.scans,
+            revenue: stats.sales,
+            points: stats.points,
+            updatedAt: new Date().toISOString(),
+            updatedBy: currentUser?.name || 'Unknown'
+          });
+        } catch (e) {
+          console.log('Stats sync failed, will retry');
+        }
+      }, 2000); // Debounce 2 seconds
+    }
+    
+    // Load shared menu from Command Center
+    async function loadSharedMenu() {
+      try {
+        const menu = await CloudSync.load('shared_menu');
+        if (menu && menu.length > 0) {
+          // Update products with synced menu items
+          products.length = 0;
+          menu.forEach(item => {
+            if (item.status !== 'unavailable') {
+              products.push({
+                id: item.id,
+                name: item.name,
+                price: item.price,
+                emoji: getCategoryEmoji(item.category),
+                category: mapCategory(item.category)
+              });
+            }
+          });
+          renderCategoryTabs();
+          renderProducts();
+        }
+      } catch (e) {
+        console.log('Using local menu');
+      }
+    }
+    
+    function getCategoryEmoji(cat) {
+      const emojis = { drinks: '☕', food: '🍿', merch: '🎁' };
+      return emojis[cat] || '📦';
+    }
+    
+    function mapCategory(cat) {
+      if (cat === 'drinks') return 'food';
+      return cat || 'popular';
+    }
+    
+    // Check for menu updates periodically
+    setInterval(loadSharedMenu, 60000);
   </script>
 </body>
 </html>
