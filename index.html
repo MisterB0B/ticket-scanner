@@ -995,16 +995,15 @@
       popular: { name: '⭐ Popular', color: '#a855f7' },
       food: { name: '🍫 Food & Drinks', color: '#f97316' },
       merch: { name: '🎁 Merchandise', color: '#06d6a0' },
-      photo: { name: '📸 Photo & Experience', color: '#ff4fd8' },
       bundles: { name: '🎄 Bundles', color: '#eab308' }
     };
     
     const products = [
       // Popular (best sellers)
-      { id: 1, name: 'Photo Package', price: 15.00, emoji: '📸', category: 'popular' },
-      { id: 2, name: 'Hot Cocoa', price: 5.00, emoji: '☕', category: 'popular' },
-      { id: 3, name: "S'mores Kit", price: 8.00, emoji: '🔥', category: 'popular' },
-      { id: 4, name: 'Light Wand', price: 12.00, emoji: '🪄', category: 'popular' },
+      { id: 1, name: 'Hot Cocoa', price: 5.00, emoji: '☕', category: 'popular' },
+      { id: 2, name: "S'mores Kit", price: 8.00, emoji: '🔥', category: 'popular' },
+      { id: 3, name: 'Light Wand', price: 12.00, emoji: '🪄', category: 'popular' },
+      { id: 4, name: 'Popcorn', price: 6.00, emoji: '🍿', category: 'popular' },
       
       // Food & Drinks
       { id: 10, name: 'Hot Cocoa', price: 5.00, emoji: '☕', category: 'food' },
@@ -1031,18 +1030,11 @@
       { id: 38, name: 'Snow Globe', price: 18.00, emoji: '🔮', category: 'merch' },
       { id: 39, name: 'Blanket', price: 30.00, emoji: '🛏️', category: 'merch' },
       
-      // Photo & Experience
-      { id: 50, name: 'Photo Package', price: 15.00, emoji: '📸', category: 'photo' },
-      { id: 51, name: 'Premium Photo', price: 25.00, emoji: '🖼️', category: 'photo' },
-      { id: 52, name: 'Digital Download', price: 10.00, emoji: '📱', category: 'photo' },
-      { id: 53, name: 'Photo Frame', price: 8.00, emoji: '🖼️', category: 'photo' },
-      { id: 54, name: 'Mascot Photo Op', price: 10.00, emoji: '🎅', category: 'photo' },
-      
       // Bundles (reward redemptions)
-      { id: 70, name: 'Blitzen Bundle', price: 29.99, emoji: '⚡', category: 'bundles', desc: 'Photo + Cocoa + S\'mores' },
+      { id: 70, name: 'Blitzen Bundle', price: 29.99, emoji: '⚡', category: 'bundles', desc: 'Cocoa + S\'mores + Wand' },
       { id: 71, name: 'Dasher Pass', price: 19.99, emoji: '🦌', category: 'bundles', desc: 'Fast Pass + Cocoa' },
-      { id: 72, name: 'Family Fun Pack', price: 49.99, emoji: '👨‍👩‍👧‍👦', category: 'bundles', desc: '4 Cocoas + Photo + Popcorn' },
-      { id: 73, name: 'VIP Upgrade', price: 39.99, emoji: '👑', category: 'bundles', desc: 'Front of line + Premium Photo' },
+      { id: 72, name: 'Family Fun Pack', price: 39.99, emoji: '👨‍👩‍👧‍👦', category: 'bundles', desc: '4 Cocoas + Popcorn + Wand' },
+      { id: 73, name: 'VIP Upgrade', price: 29.99, emoji: '👑', category: 'bundles', desc: 'Front of line access' },
       { id: 74, name: 'Kids Bundle', price: 15.00, emoji: '🧒', category: 'bundles', desc: 'Wand + Glow Necklace + Candy' },
     ];
     
