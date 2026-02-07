@@ -666,6 +666,71 @@
     }
     .compliance-footer a { color: var(--text-dim); text-decoration: none; font-size: 10px; margin: 0 8px; }
     .compliance-footer .copy { font-size: 9px; color: var(--text-dim); margin-top: 6px; }
+    
+    /* ========== PRODUCT CATEGORY TABS ========== */
+    .product-category-tabs {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding: 10px 14px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .product-category-tabs::-webkit-scrollbar { display: none; }
+    
+    .category-tab {
+      padding: 8px 14px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: var(--text-dim);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    .category-tab:hover {
+      border-color: var(--purple);
+      color: var(--text);
+    }
+    .category-tab.active {
+      background: var(--purple);
+      border-color: var(--purple);
+      color: white;
+    }
+    
+    /* Enhanced quick sales grid */
+    .quick-sales {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      padding: 12px 14px;
+      max-height: 220px;
+      overflow-y: auto;
+    }
+    
+    .sale-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+    .sale-btn:active { transform: scale(0.95); }
+    .sale-btn:hover { border-color: var(--purple); background: rgba(168, 85, 247, 0.1); }
+    .sale-btn .emoji { font-size: 22px; }
+    .sale-btn .name { font-size: 10px; color: var(--text); text-align: center; line-height: 1.2; }
+    .sale-btn .price { font-size: 12px; font-weight: 700; color: var(--teal); }
+    .sale-btn .desc { font-size: 8px; color: var(--text-dim); text-align: center; margin-top: 2px; }
   </style>
 </head>
 <body>
@@ -794,7 +859,9 @@
         <button class="reader-btn" onclick="connectReader()">⚙️ Setup</button>
       </div>
       
-      <div class="quick-sale-label">Quick Add</div>
+      <!-- Product Category Tabs -->
+      <div class="product-category-tabs" id="productCategoryTabs"></div>
+      
       <div class="quick-sales" id="quickSales"></div>
       
       <div class="cart-section">
@@ -923,14 +990,63 @@
       { id: 6, name: 'Manager', initials: '👑', pin: '0000', color: '#eab308' },
     ];
     
+    // Product categories for on-site add-on sales
+    const productCategories = {
+      popular: { name: '⭐ Popular', color: '#a855f7' },
+      food: { name: '🍫 Food & Drinks', color: '#f97316' },
+      merch: { name: '🎁 Merchandise', color: '#06d6a0' },
+      photo: { name: '📸 Photo & Experience', color: '#ff4fd8' },
+      bundles: { name: '🎄 Bundles', color: '#eab308' }
+    };
+    
     const products = [
-      { id: 1, name: 'Photo Package', price: 15.00, emoji: '📸' },
-      { id: 2, name: 'Hot Cocoa', price: 5.00, emoji: '☕' },
-      { id: 3, name: "S'mores Kit", price: 8.00, emoji: '🔥' },
-      { id: 4, name: 'Light Wand', price: 12.00, emoji: '🪄' },
-      { id: 5, name: 'Plush Toy', price: 20.00, emoji: '🧸' },
-      { id: 6, name: 'Magic Glasses', price: 6.00, emoji: '👓' },
+      // Popular (best sellers)
+      { id: 1, name: 'Photo Package', price: 15.00, emoji: '📸', category: 'popular' },
+      { id: 2, name: 'Hot Cocoa', price: 5.00, emoji: '☕', category: 'popular' },
+      { id: 3, name: "S'mores Kit", price: 8.00, emoji: '🔥', category: 'popular' },
+      { id: 4, name: 'Light Wand', price: 12.00, emoji: '🪄', category: 'popular' },
+      
+      // Food & Drinks
+      { id: 10, name: 'Hot Cocoa', price: 5.00, emoji: '☕', category: 'food' },
+      { id: 11, name: 'Apple Cider', price: 5.00, emoji: '🍎', category: 'food' },
+      { id: 12, name: 'Coffee', price: 4.00, emoji: '☕', category: 'food' },
+      { id: 13, name: 'Hot Tea', price: 3.50, emoji: '🍵', category: 'food' },
+      { id: 14, name: 'Water Bottle', price: 3.00, emoji: '💧', category: 'food' },
+      { id: 15, name: "S'mores Kit", price: 8.00, emoji: '🔥', category: 'food' },
+      { id: 16, name: 'Popcorn', price: 6.00, emoji: '🍿', category: 'food' },
+      { id: 17, name: 'Cotton Candy', price: 7.00, emoji: '🍭', category: 'food' },
+      { id: 18, name: 'Churros', price: 6.00, emoji: '🥖', category: 'food' },
+      { id: 19, name: 'Candy Cane', price: 2.00, emoji: '🍬', category: 'food' },
+      { id: 20, name: 'Hot Chocolate Bomb', price: 8.00, emoji: '💣', category: 'food' },
+      
+      // Merchandise
+      { id: 30, name: 'Light Wand', price: 12.00, emoji: '🪄', category: 'merch' },
+      { id: 31, name: 'Glow Necklace', price: 5.00, emoji: '💫', category: 'merch' },
+      { id: 32, name: 'Magic Glasses', price: 6.00, emoji: '👓', category: 'merch' },
+      { id: 33, name: 'Plush Toy', price: 20.00, emoji: '🧸', category: 'merch' },
+      { id: 34, name: 'Santa Hat', price: 15.00, emoji: '🎅', category: 'merch' },
+      { id: 35, name: 'Reindeer Antlers', price: 12.00, emoji: '🦌', category: 'merch' },
+      { id: 36, name: 'Light Park T-Shirt', price: 25.00, emoji: '👕', category: 'merch' },
+      { id: 37, name: 'Ornament', price: 10.00, emoji: '🎄', category: 'merch' },
+      { id: 38, name: 'Snow Globe', price: 18.00, emoji: '🔮', category: 'merch' },
+      { id: 39, name: 'Blanket', price: 30.00, emoji: '🛏️', category: 'merch' },
+      
+      // Photo & Experience
+      { id: 50, name: 'Photo Package', price: 15.00, emoji: '📸', category: 'photo' },
+      { id: 51, name: 'Premium Photo', price: 25.00, emoji: '🖼️', category: 'photo' },
+      { id: 52, name: 'Digital Download', price: 10.00, emoji: '📱', category: 'photo' },
+      { id: 53, name: 'Photo Frame', price: 8.00, emoji: '🖼️', category: 'photo' },
+      { id: 54, name: 'Mascot Photo Op', price: 10.00, emoji: '🎅', category: 'photo' },
+      
+      // Bundles (reward redemptions)
+      { id: 70, name: 'Blitzen Bundle', price: 29.99, emoji: '⚡', category: 'bundles', desc: 'Photo + Cocoa + S\'mores' },
+      { id: 71, name: 'Dasher Pass', price: 19.99, emoji: '🦌', category: 'bundles', desc: 'Fast Pass + Cocoa' },
+      { id: 72, name: 'Family Fun Pack', price: 49.99, emoji: '👨‍👩‍👧‍👦', category: 'bundles', desc: '4 Cocoas + Photo + Popcorn' },
+      { id: 73, name: 'VIP Upgrade', price: 39.99, emoji: '👑', category: 'bundles', desc: 'Front of line + Premium Photo' },
+      { id: 74, name: 'Kids Bundle', price: 15.00, emoji: '🧒', category: 'bundles', desc: 'Wand + Glow Necklace + Candy' },
     ];
+    
+    let activeProductCategory = 'popular';
     
     const DEMO_TICKETS = [
       // Valid tickets
@@ -1033,6 +1149,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => document.getElementById('splash').classList.add('hidden'), 1000);
       renderEmployeeGrid();
+      renderCategoryTabs();
       renderProducts();
       renderLeaderboard();
       checkSavedSession();
@@ -1313,12 +1430,31 @@
     }
     
     // ========== SALES ==========
+    function renderCategoryTabs() {
+      const container = document.getElementById('productCategoryTabs');
+      container.innerHTML = Object.entries(productCategories).map(([key, cat]) => `
+        <button class="category-tab ${activeProductCategory === key ? 'active' : ''}" 
+                onclick="selectProductCategory('${key}')"
+                style="${activeProductCategory === key ? `background: ${cat.color}; border-color: ${cat.color};` : ''}">
+          ${cat.name}
+        </button>
+      `).join('');
+    }
+    
+    function selectProductCategory(category) {
+      activeProductCategory = category;
+      renderCategoryTabs();
+      renderProducts();
+    }
+    
     function renderProducts() {
-      document.getElementById('quickSales').innerHTML = products.map(p => `
+      const filtered = products.filter(p => p.category === activeProductCategory);
+      document.getElementById('quickSales').innerHTML = filtered.map(p => `
         <button class="sale-btn" onclick="addToCart(${p.id})">
           <div class="emoji">${p.emoji}</div>
           <div class="name">${p.name}</div>
           <div class="price">$${p.price.toFixed(2)}</div>
+          ${p.desc ? `<div class="desc">${p.desc}</div>` : ''}
         </button>
       `).join('');
     }
