@@ -731,6 +731,32 @@
     .sale-btn .name { font-size: 10px; color: var(--text); text-align: center; line-height: 1.2; }
     .sale-btn .price { font-size: 12px; font-weight: 700; color: var(--teal); }
     .sale-btn .desc { font-size: 8px; color: var(--text-dim); text-align: center; margin-top: 2px; }
+    
+    /* Mobile Responsive */
+    @media (max-width: 600px) {
+      .header { padding: 8px 12px; }
+      .header-avatar { width: 30px; height: 30px; font-size: 12px; }
+      .header-info h3 { font-size: 13px; }
+      .scanner-frame { width: 90vw; height: 60vw; max-width: 320px; max-height: 240px; }
+      .scanner-instruction { font-size: 12px; }
+      .ticket-result { padding: 16px; margin: 12px; }
+      .ticket-type { font-size: 22px; }
+      .ticket-info-grid { grid-template-columns: 1fr; gap: 8px; }
+      .addons-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+      .sale-btn { padding: 8px 4px; }
+      .sale-btn .emoji { font-size: 18px; }
+      .sale-btn .name { font-size: 9px; }
+      .sale-btn .price { font-size: 11px; }
+      .action-btn { padding: 14px; font-size: 14px; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .stat-card { padding: 12px; }
+      .stat-value { font-size: 24px; }
+    }
+    
+    @media (max-width: 400px) {
+      .addons-grid { grid-template-columns: repeat(2, 1fr); }
+      .stats-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
