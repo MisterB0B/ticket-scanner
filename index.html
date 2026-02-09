@@ -1051,12 +1051,12 @@
   <script>
     // ========== DATA ==========
     const employees = [
-      { id: 1, name: 'Maria G.', initials: 'MG', pin: '1234', color: '#ff4fd8' },
-      { id: 2, name: 'Jason R.', initials: 'JR', pin: '5678', color: '#a855f7' },
-      { id: 3, name: 'Sarah C.', initials: 'SC', pin: '9012', color: '#06d6a0' },
-      { id: 4, name: 'Eddie M.', initials: 'EM', pin: '3456', color: '#f97316' },
-      { id: 5, name: 'Citlaly V.', initials: 'CV', pin: '7890', color: '#3b82f6' },
-      { id: 6, name: 'Manager', initials: '👑', pin: '0000', color: '#eab308' },
+      { id: 1, name: 'Maria G.', initials: 'MG', pin: '1260', color: '#ff4fd8' },
+      { id: 2, name: 'Jason R.', initials: 'JR', pin: '1260', color: '#a855f7' },
+      { id: 3, name: 'Sarah C.', initials: 'SC', pin: '1260', color: '#06d6a0' },
+      { id: 4, name: 'Eddie M.', initials: 'EM', pin: '1260', color: '#f97316' },
+      { id: 5, name: 'Citlaly V.', initials: 'CV', pin: '1260', color: '#3b82f6' },
+      { id: 6, name: 'Manager', initials: '👑', pin: '1260', color: '#eab308' },
     ];
     
     // Product categories for on-site add-on sales
@@ -1323,7 +1323,7 @@
     
     function showManualVenueSelect() {
       const pin = prompt('Enter manager PIN to override location:');
-      if (pin === '0000') {
+      if (pin === '1260') {
         const venue = prompt('Enter venue code:\\nkaty, spring, selma, missions, arlington, frisco, roundrock, okc');
         if (venue && VENUE_GEOFENCES[venue]) {
           currentVenue = venue;
@@ -1578,7 +1578,7 @@
           break;
         case 'override':
           const pin = prompt('Enter manager PIN to override:');
-          if (pin === '0000') {
+          if (pin === '1260') {
             alert('✅ Manager override approved\n\nGuest may enter.');
             stats.scans++;
             stats.cars++;
