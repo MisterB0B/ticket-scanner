@@ -1199,7 +1199,9 @@
     
     // ========== VENUE GEOFENCES ==========
     // GPS coordinates + radius (meters) for each venue
+    // "test" venue works anywhere (huge radius) for testing purposes
     const VENUE_GEOFENCES = {
+      test:       { name: 'Test Mode',     lat: 0,       lng: 0,       radius: 99999999 },
       katy:       { name: 'Katy',          lat: 29.7858, lng: -95.8245, radius: 500 },
       spring:     { name: 'Spring',        lat: 30.0799, lng: -95.4172, radius: 500 },
       selma:      { name: 'Selma',         lat: 29.5847, lng: -98.3061, radius: 500 },
@@ -1273,13 +1275,21 @@
       let closest = null;
       let closestDist = Infinity;
       
+      // Check real venues first (skip test)
       for (const [id, venue] of Object.entries(VENUE_GEOFENCES)) {
+        if (id === 'test') continue;
         const dist = getDistanceMeters(lat, lng, venue.lat, venue.lng);
         if (dist <= venue.radius && dist < closestDist) {
           closest = { id, ...venue };
           closestDist = dist;
         }
       }
+      
+      // If no real venue found, use test mode (works anywhere)
+      if (!closest) {
+        closest = { id: 'test', ...VENUE_GEOFENCES.test };
+      }
+      
       return closest;
     }
     
