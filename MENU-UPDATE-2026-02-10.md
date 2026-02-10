@@ -1,58 +1,48 @@
-# Ticket Scanner Menu Update - 2026-02-10
+# Ticket Scanner Add-Ons Update - 2026-02-10
 
 ## What Changed
 
-Updated all add-on items and prices to match Command Center shared menu.
+Updated add-ons to **exactly match the Ticketing Prototype** — these are items customers PRE-PURCHASED online and pick up at the tent.
 
-### Price Corrections
-- **Hot Cocoa**: $5.00 → $4.00 ✅
-- **Popcorn**: $6.00 → $5.00 ✅
-- **S'mores Kit**: $8.00 (unchanged) ✅
-- **Light-Up Wand**: $12.00 (unchanged, renamed from "Light Wand") ✅
+## Complete Add-On List (from Ticketing Prototype)
 
-### New Items Added
-**Drinks:**
-- Apple Cider - $4.00
-- Coffee - $3.50
-- Hot Tea - $3.00
-- Water Bottle - $2.50
+### Pre-Purchased Add-Ons (Popular)
+1. **Blitzen Bundle** - $29.99 🎁
+   - Popcorn + 2 Lemonades + 2 Wands + 2 Glasses
+2. **Bucket of Popcorn** - $9.99 🍿
+3. **The Light Wand** - $7.99 🪄
+4. **DJ Polar Ice Plush** - $24.99 🐻❄️
 
-**Food:**
-- Cotton Candy - $6.00
-- Churros - $5.00
-- Candy Cane - $2.00
+### Food & Drinks
+- Bucket of Popcorn - $9.99
+- Electric Lemonade - $5.99
+- Cotton Candy - $4.99
 
-**Merchandise:**
-- Glow Necklace - $5.00
-- Santa Hat - $15.00
-- Reindeer Antlers - $10.00
-- Light Park T-Shirt - $25.00
-- Ornament - $8.00
+### Merchandise
+- The Light Wand - $7.99
+- 2-Pack Magic Glasses - $5.99
+- DJ Polar Ice Plush - $24.99
+- Adventures of DJ Polar Ice (Book) - $14.99
 
-### Items Removed
-- ❌ **Dasher Pass bundle** - Removed per Bob's request (customers are already at tent, don't need fast pass)
-- ❌ **VIP Upgrade bundle** - Removed (not relevant at tent)
-- Removed duplicate/outdated items (Magic Glasses, Plush Toy, Snow Globe, Blanket, Hot Chocolate Bomb)
+### Bundles
+- Blitzen Bundle - $29.99 (Popcorn + 2 Lemonades + 2 Wands + 2 Glasses)
 
-### Bundles Kept
-- ✅ Blitzen Bundle - $29.99 (Cocoa + S'mores + Wand)
-- ✅ Family Fun Pack - $39.99 (4 Cocoas + Popcorn + Wand)
-- ✅ Kids Bundle - $15.00 (Wand + Glow Necklace + Candy)
+## What Was Removed
+- ❌ **Dasher Pass** - Removed per Bob's instruction ("customers already at tent, tent is after regular queue and dasher pass")
+- ❌ All Command Center menu items (those are sold separately, not pre-purchased add-ons)
 
-## Category Breakdown
+## How It Works
+1. Customer buys ticket online + selects add-ons
+2. At the show, they drive through (Dasher Pass customers skip line)
+3. **At the tent**, staff scan ticket and see pre-purchased add-ons
+4. Staff fulfill the add-ons (hand out popcorn, wands, plush, etc.)
 
-**Popular (4 items):** Hot Cocoa, S'mores Kit, Light-Up Wand, Popcorn
-**Food & Drinks (10 items):** All drinks + snacks
-**Merchandise (6 items):** Wearables and keepsakes
-**Bundles (3 items):** Pre-packaged deals
-
-## Notes
-- All prices now match Command Center shared menu
-- "Light Wand" renamed to "Light-Up Wand" for consistency
-- Removed items that aren't actually sold at tent
-- Scanner will show pre-purchased add-ons from tickets
-- Staff can also sell additional items at tent
+## Key Difference
+- **Ticketing Prototype** = What customers can PRE-PURCHASE online
+- **Ticket Scanner** = Show what was PRE-PURCHASED (for tent fulfillment)
+- **Command Center** = What staff can SELL at tent (walk-up purchases)
 
 ## Testing
 ✅ Deployed to: https://thelightparkops.com/ticket-scanner/
 ⚠️ Hard refresh (Cmd+Shift+R) to see changes
+✅ All prices match ticketing prototype exactly
