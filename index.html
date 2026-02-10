@@ -1070,36 +1070,25 @@
     };
     
     const products = [
-      // Popular (best sellers) - Matches Command Center menu prices
-      { id: 1, name: 'Hot Cocoa', price: 4.00, emoji: '☕', category: 'popular' },
-      { id: 2, name: "S'mores Kit", price: 8.00, emoji: '🔥', category: 'popular' },
-      { id: 3, name: 'Light-Up Wand', price: 12.00, emoji: '🪄', category: 'popular' },
-      { id: 4, name: 'Popcorn', price: 5.00, emoji: '🍿', category: 'popular' },
+      // Pre-Purchased Add-Ons (from Ticketing Prototype - customers pick up at tent)
+      { id: 1, name: 'Blitzen Bundle', price: 29.99, emoji: '🎁', category: 'popular', desc: 'Popcorn + 2 Lemonades + 2 Wands + 2 Glasses' },
+      { id: 2, name: 'Bucket of Popcorn', price: 9.99, emoji: '🍿', category: 'popular' },
+      { id: 3, name: 'The Light Wand', price: 7.99, emoji: '🪄', category: 'popular' },
+      { id: 4, name: 'DJ Polar Ice Plush', price: 24.99, emoji: '🐻❄️', category: 'popular' },
       
-      // Food & Drinks - Matches Command Center menu
-      { id: 10, name: 'Hot Cocoa', price: 4.00, emoji: '☕', category: 'food' },
-      { id: 11, name: 'Apple Cider', price: 4.00, emoji: '🍎', category: 'food' },
-      { id: 12, name: 'Coffee', price: 3.50, emoji: '☕', category: 'food' },
-      { id: 13, name: 'Hot Tea', price: 3.00, emoji: '🍵', category: 'food' },
-      { id: 14, name: 'Water Bottle', price: 2.50, emoji: '💧', category: 'food' },
-      { id: 15, name: "S'mores Kit", price: 8.00, emoji: '🔥', category: 'food' },
-      { id: 16, name: 'Popcorn', price: 5.00, emoji: '🍿', category: 'food' },
-      { id: 17, name: 'Cotton Candy', price: 6.00, emoji: '🍭', category: 'food' },
-      { id: 18, name: 'Churros', price: 5.00, emoji: '🥖', category: 'food' },
-      { id: 19, name: 'Candy Cane', price: 2.00, emoji: '🍬', category: 'food' },
+      // Food & Drinks (from ticketing prototype)
+      { id: 10, name: 'Bucket of Popcorn', price: 9.99, emoji: '🍿', category: 'food' },
+      { id: 11, name: 'Electric Lemonade', price: 5.99, emoji: '🍋', category: 'food' },
+      { id: 12, name: 'Cotton Candy', price: 4.99, emoji: '🍭', category: 'food' },
       
-      // Merchandise - Matches Command Center menu
-      { id: 30, name: 'Light-Up Wand', price: 12.00, emoji: '🪄', category: 'merch' },
-      { id: 31, name: 'Glow Necklace', price: 5.00, emoji: '💫', category: 'merch' },
-      { id: 32, name: 'Santa Hat', price: 15.00, emoji: '🎅', category: 'merch' },
-      { id: 33, name: 'Reindeer Antlers', price: 10.00, emoji: '🦌', category: 'merch' },
-      { id: 34, name: 'Light Park T-Shirt', price: 25.00, emoji: '👕', category: 'merch' },
-      { id: 35, name: 'Ornament', price: 8.00, emoji: '🎄', category: 'merch' },
+      // Merchandise (from ticketing prototype)
+      { id: 20, name: 'The Light Wand', price: 7.99, emoji: '🪄', category: 'merch' },
+      { id: 21, name: '2-Pack Magic Glasses', price: 5.99, emoji: '👓', category: 'merch' },
+      { id: 22, name: 'DJ Polar Ice Plush', price: 24.99, emoji: '🐻❄️', category: 'merch' },
+      { id: 23, name: 'Adventures of DJ Polar Ice', price: 14.99, emoji: '📖', category: 'merch', desc: 'Illustrated children\'s storybook' },
       
-      // Bundles (reward redemptions) - No Dasher Pass (customers already at tent)
-      { id: 70, name: 'Blitzen Bundle', price: 29.99, emoji: '⚡', category: 'bundles', desc: 'Cocoa + S\'mores + Wand' },
-      { id: 72, name: 'Family Fun Pack', price: 39.99, emoji: '👨‍👩‍👧‍👦', category: 'bundles', desc: '4 Cocoas + Popcorn + Wand' },
-      { id: 74, name: 'Kids Bundle', price: 15.00, emoji: '🧒', category: 'bundles', desc: 'Wand + Glow Necklace + Candy' },
+      // Bundles (from ticketing prototype - NO Dasher Pass, they already used it to skip line)
+      { id: 30, name: 'Blitzen Bundle', price: 29.99, emoji: '🎁', category: 'bundles', desc: 'Popcorn + 2 Lemonades + 2 Wands + 2 Glasses' },
     ];
     
     let activeProductCategory = 'popular';
