@@ -798,8 +798,10 @@
       .stats-grid { grid-template-columns: 1fr; }
     }
   </style>
+  <script src="supabase-sync.js"></script>
 </head>
 <body>
+  <a href="https://thelightparkops.com" style="position: absolute; top: 20px; left: 20px; color: #a855f7; text-decoration: none; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; transition: all 0.2s; z-index: 1000;" onmouseover="this.style.color='#06d6a0'" onmouseout="this.style.color='#a855f7'">← Dashboard</a>
   <!-- Splash Screen -->
   <div id="splash">
     <div class="logo">🎟️</div>
@@ -1068,42 +1070,35 @@
     };
     
     const products = [
-      // Popular (best sellers)
-      { id: 1, name: 'Hot Cocoa', price: 5.00, emoji: '☕', category: 'popular' },
+      // Popular (best sellers) - Matches Command Center menu prices
+      { id: 1, name: 'Hot Cocoa', price: 4.00, emoji: '☕', category: 'popular' },
       { id: 2, name: "S'mores Kit", price: 8.00, emoji: '🔥', category: 'popular' },
-      { id: 3, name: 'Light Wand', price: 12.00, emoji: '🪄', category: 'popular' },
-      { id: 4, name: 'Popcorn', price: 6.00, emoji: '🍿', category: 'popular' },
+      { id: 3, name: 'Light-Up Wand', price: 12.00, emoji: '🪄', category: 'popular' },
+      { id: 4, name: 'Popcorn', price: 5.00, emoji: '🍿', category: 'popular' },
       
-      // Food & Drinks
-      { id: 10, name: 'Hot Cocoa', price: 5.00, emoji: '☕', category: 'food' },
-      { id: 11, name: 'Apple Cider', price: 5.00, emoji: '🍎', category: 'food' },
-      { id: 12, name: 'Coffee', price: 4.00, emoji: '☕', category: 'food' },
-      { id: 13, name: 'Hot Tea', price: 3.50, emoji: '🍵', category: 'food' },
-      { id: 14, name: 'Water Bottle', price: 3.00, emoji: '💧', category: 'food' },
+      // Food & Drinks - Matches Command Center menu
+      { id: 10, name: 'Hot Cocoa', price: 4.00, emoji: '☕', category: 'food' },
+      { id: 11, name: 'Apple Cider', price: 4.00, emoji: '🍎', category: 'food' },
+      { id: 12, name: 'Coffee', price: 3.50, emoji: '☕', category: 'food' },
+      { id: 13, name: 'Hot Tea', price: 3.00, emoji: '🍵', category: 'food' },
+      { id: 14, name: 'Water Bottle', price: 2.50, emoji: '💧', category: 'food' },
       { id: 15, name: "S'mores Kit", price: 8.00, emoji: '🔥', category: 'food' },
-      { id: 16, name: 'Popcorn', price: 6.00, emoji: '🍿', category: 'food' },
-      { id: 17, name: 'Cotton Candy', price: 7.00, emoji: '🍭', category: 'food' },
-      { id: 18, name: 'Churros', price: 6.00, emoji: '🥖', category: 'food' },
+      { id: 16, name: 'Popcorn', price: 5.00, emoji: '🍿', category: 'food' },
+      { id: 17, name: 'Cotton Candy', price: 6.00, emoji: '🍭', category: 'food' },
+      { id: 18, name: 'Churros', price: 5.00, emoji: '🥖', category: 'food' },
       { id: 19, name: 'Candy Cane', price: 2.00, emoji: '🍬', category: 'food' },
-      { id: 20, name: 'Hot Chocolate Bomb', price: 8.00, emoji: '💣', category: 'food' },
       
-      // Merchandise
-      { id: 30, name: 'Light Wand', price: 12.00, emoji: '🪄', category: 'merch' },
+      // Merchandise - Matches Command Center menu
+      { id: 30, name: 'Light-Up Wand', price: 12.00, emoji: '🪄', category: 'merch' },
       { id: 31, name: 'Glow Necklace', price: 5.00, emoji: '💫', category: 'merch' },
-      { id: 32, name: 'Magic Glasses', price: 6.00, emoji: '👓', category: 'merch' },
-      { id: 33, name: 'Plush Toy', price: 20.00, emoji: '🧸', category: 'merch' },
-      { id: 34, name: 'Santa Hat', price: 15.00, emoji: '🎅', category: 'merch' },
-      { id: 35, name: 'Reindeer Antlers', price: 12.00, emoji: '🦌', category: 'merch' },
-      { id: 36, name: 'Light Park T-Shirt', price: 25.00, emoji: '👕', category: 'merch' },
-      { id: 37, name: 'Ornament', price: 10.00, emoji: '🎄', category: 'merch' },
-      { id: 38, name: 'Snow Globe', price: 18.00, emoji: '🔮', category: 'merch' },
-      { id: 39, name: 'Blanket', price: 30.00, emoji: '🛏️', category: 'merch' },
+      { id: 32, name: 'Santa Hat', price: 15.00, emoji: '🎅', category: 'merch' },
+      { id: 33, name: 'Reindeer Antlers', price: 10.00, emoji: '🦌', category: 'merch' },
+      { id: 34, name: 'Light Park T-Shirt', price: 25.00, emoji: '👕', category: 'merch' },
+      { id: 35, name: 'Ornament', price: 8.00, emoji: '🎄', category: 'merch' },
       
-      // Bundles (reward redemptions)
+      // Bundles (reward redemptions) - No Dasher Pass (customers already at tent)
       { id: 70, name: 'Blitzen Bundle', price: 29.99, emoji: '⚡', category: 'bundles', desc: 'Cocoa + S\'mores + Wand' },
-      { id: 71, name: 'Dasher Pass', price: 19.99, emoji: '🦌', category: 'bundles', desc: 'Fast Pass + Cocoa' },
       { id: 72, name: 'Family Fun Pack', price: 39.99, emoji: '👨‍👩‍👧‍👦', category: 'bundles', desc: '4 Cocoas + Popcorn + Wand' },
-      { id: 73, name: 'VIP Upgrade', price: 29.99, emoji: '👑', category: 'bundles', desc: 'Front of line access' },
       { id: 74, name: 'Kids Bundle', price: 15.00, emoji: '🧒', category: 'bundles', desc: 'Wand + Glow Necklace + Candy' },
     ];
     
