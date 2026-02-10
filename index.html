@@ -1185,6 +1185,7 @@
     // GPS coordinates + radius (meters) for each venue
     // "test" venue works anywhere (huge radius) for testing purposes
     const VENUE_GEOFENCES = {
+      demo:       { name: 'Demo Location', lat: 0,       lng: 0,       radius: 99999999 },
       test:       { name: 'Test Mode',     lat: 0,       lng: 0,       radius: 99999999 },
       katy:       { name: 'Katy',          lat: 29.7858, lng: -95.8245, radius: 500 },
       spring:     { name: 'Spring',        lat: 30.0799, lng: -95.4172, radius: 500 },
@@ -1217,42 +1218,17 @@
     
     // ========== GPS GEOFENCE DETECTION ==========
     function detectVenue() {
-      document.getElementById('venueDetecting').style.display = 'flex';
-      document.getElementById('venueDetected').style.display = 'none';
+      // DEMO MODE: Skip GPS detection, use Demo Location
+      document.getElementById('venueDetecting').style.display = 'none';
       document.getElementById('venueError').style.display = 'none';
+      document.getElementById('venueDetected').style.display = 'flex';
+      document.getElementById('detectedVenueName').textContent = 'Demo Location';
       
-      if (!navigator.geolocation) {
-        showVenueError('GPS not supported on this device');
-        return;
-      }
+      currentVenue = 'demo';
+      venueDetected = true;
       
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          const venue = findNearestVenue(latitude, longitude);
-          
-          if (venue) {
-            currentVenue = venue.id;
-            venueDetected = true;
-            document.getElementById('venueDetecting').style.display = 'none';
-            document.getElementById('venueDetected').style.display = 'flex';
-            document.getElementById('detectedVenueName').textContent = venue.name;
-            document.getElementById('splash').classList.add('hidden');
-            checkSavedSession();
-          } else {
-            showVenueError('Not at a Light Park venue');
-          }
-        },
-        (error) => {
-          console.log('GPS error:', error);
-          let msg = 'Location unavailable';
-          if (error.code === 1) msg = 'Location permission denied';
-          if (error.code === 2) msg = 'Location unavailable';
-          if (error.code === 3) msg = 'Location timeout';
-          showVenueError(msg);
-        },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
-      );
+      document.getElementById('splash').classList.add('hidden');
+      checkSavedSession();
     }
     
     function findNearestVenue(lat, lng) {
